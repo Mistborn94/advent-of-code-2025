@@ -22,44 +22,30 @@ fun solveA(text: String, debug: Debug = Debug.Disabled): Long {
 
 
 fun solveB(text: String, debug: Debug = Debug.Disabled): Long {
-    val lines = text.lines().map { "$it  " }
+    val lines = text.lines().map { "$it " }
     val numberLines = lines.dropLast(1)
     val operatorLine = lines.last()
 
-    var currentIndex = 0
-    var total = 0L
-    do {
-        val next = nextIndex(operatorLine, currentIndex)
-        val values = mutableListOf<Long>()
-
-        for (d in currentIndex.. next-2) {
-            var number = 0L
-            for (r in numberLines) {
-                val char = r[d]
-                if (char != ' ') {
-                    number = number * 10 + (char.digitToInt())
-                }
+    return lines[0].indices.fold(Triple(' ', 0L, 0L)) { (operator, answer, total), c ->
+        val number = numberLines.map { it[c] }.joinToString(separator = "").trim()
+        if (operatorLine[c] != ' ') {
+            debug {
+                println("Index $c: Next operator ${operatorLine[c]}")
             }
-            values.add(number)
+           Triple(operatorLine[c], number.toLong(), total)
+        } else if (number.isEmpty()) {
+            Triple(' ', 0L, total + answer)
+        } else {
+            val newAnswer = when (operator) {
+                '+' -> answer + number.toLong()
+                '*' -> answer * number.toLong()
+                else -> throw IllegalArgumentException("Unknown operator $operator at $c")
+            }
+            debug {
+                println("Index $c: Next answer is $answer $operator $number = $newAnswer")
+            }
+            Triple(operator, newAnswer, total)
         }
-        val operator = operatorLine[currentIndex]
-        val answer = when (operator) {
-            '+' -> values.sum()
-            '*' -> values.product()
-            else -> throw IllegalArgumentException("Unknown operator $operator at $currentIndex")
-        }
-        debug {
-            println("Index: ${currentIndex}..<$next, Values: $values $operator = $answer")
-        }
-        total += answer
-        currentIndex = next
-    } while (currentIndex < operatorLine.length)
-
-   return total
+    }.third
 }
 
-private fun nextIndex(operatorLine: String, currentIndex: Int): Int {
-    val indexOfAny =
-        operatorLine.indexOfAny(chars = charArrayOf('*', '+'), startIndex = currentIndex + 1, ignoreCase = false)
-    return  if (indexOfAny != -1) indexOfAny else operatorLine.length + 1
-}

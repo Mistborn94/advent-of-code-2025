@@ -18,7 +18,7 @@ internal class Day6KtTest {
         | 45 64  387 23 
         |  6 98  215 314
         |*   +   *   +  
-        """.trimMargin().trimEnd()
+        """.trimMargin()
 
         assertEquals(4277556, solveA(text, Debug.Enabled))
         assertEquals(3263827, solveB(text, Debug.Enabled))
@@ -26,7 +26,7 @@ internal class Day6KtTest {
 
     @Test
     fun solve() {
-        val lines = readDayFile(day, "input").readText().trimEnd()
+        val lines = readDayFile(day, "input").readText().trimEnd('\n')
 
         val solveA = solveA(lines)
         println("A: $solveA")
