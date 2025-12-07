@@ -1,10 +1,12 @@
 package day6
 
 import helper.Debug
+import helper.printExecutionTime
+import helper.printTotalTime
 import helper.readDayFile
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.measureTime
 
 
 internal class Day6KtTest {
@@ -20,20 +22,28 @@ internal class Day6KtTest {
         |*   +   *   +  
         """.trimMargin()
 
-        assertEquals(4277556, solveA(text, Debug.Enabled))
-        assertEquals(3263827, solveB(text, Debug.Enabled))
+        assertEquals(4277556, solveA(text, Debug.Disabled))
+        assertEquals(3263827, solveB(text, Debug.Disabled))
     }
 
     @Test
     fun solve() {
         val lines = readDayFile(day, "input").readText().trimEnd('\n')
 
-        val solveA = solveA(lines)
-        println("A: $solveA")
-        assertEquals(5977759036837, solveA)
+        println("Day $day")
+        val durationA = measureTime {
+            val solveA = solveA(lines)
+            println("A: $solveA")
+            assertEquals(5977759036837, solveA)
+        }
+        printExecutionTime(durationA)
 
-        val solveB = solveB(lines)
-        println("B: $solveB")
-        assertEquals(9630000828442, solveB)
+        val durationB = measureTime {
+            val solveB = solveB(lines)
+            println("B: $solveB")
+            assertEquals(9630000828442, solveB)
+        }
+        printExecutionTime(durationB)
+        printTotalTime(durationA + durationB)
     }
 }

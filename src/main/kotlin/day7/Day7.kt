@@ -6,90 +6,66 @@ import helper.point.base.Point
 import helper.point.base.contains
 import helper.point.base.get
 import helper.point.base.indexOf
-import kotlin.collections.contains
 
 val down = Direction.DOWN.point
 fun solveA(text: String, debug: Debug = Debug.Disabled): Int {
+    val seenSplitters = mutableSetOf<Point>()
+
     val lines = text.lines()
-    val toVisit = linkedSetOf(lines.indexOf('S'))
-    val splitters = mutableSetOf<Point>()
+    val start = lines.indexOf('S')
 
-    while (toVisit.isNotEmpty()) {
-        val start = toVisit.removeFirst()
-        var current = start
+    fun countSplits(start: Point, depth: String = ""): Int {
+        debug {
+            println("${depth}Evaluating $start: ")
+        }
 
+        var next = start
         do {
-            current += down
-        } while (current in lines && lines[current] == '.')
+            next += down
+        } while (next in lines && lines[next] == '.')
 
-        if (current in lines && lines[current] == '^' && current !in splitters) {
-            splitters.add(current)
 
-            val left = current + Direction.LEFT.point
-            val right = current + Direction.RIGHT.point
-            toVisit.add(left)
-            toVisit.add(right)
+        if (next !in lines || next in seenSplitters) {
+            debug {
+                println("$depth  Walked to $next [outside]")
+            }
+            return 0
+        } else {
+            seenSplitters.add(next)
+            val left = next + Direction.LEFT.point
+            val right = next + Direction.RIGHT.point
+            return 1 + countSplits(left) + countSplits(right)
         }
     }
 
-    return splitters.size
+    return countSplits(start)
 }
 
 
 fun solveB(text: String, debug: Debug = Debug.Disabled): Long {
+    val cacheB = mutableMapOf<Point, Long>()
+
     val lines = text.lines()
     val start = lines.indexOf('S')
-    return countTimelines(start, debug, lines)
-}
 
-val cache = mutableMapOf<Point, Long>()
-private fun countTimelines(
-    start: Point,
-    debug: Debug,
-    lines: List<String>
-): Long {
+    fun countTimelines(start: Point): Long {
+        return cacheB.getOrPut(start) {
+            var next = start
+            do {
+                next += down
+            } while (next in lines && lines[next] == '.')
 
-    return cache.getOrPut(start) {
-        if (start in cache) {
-            return cache[start]!!
-        }
-
-        var next = start
-        do {
-            next += down
-        } while (next in lines && lines[next] == '.')
-
-        if (next !in lines) {
-            return@getOrPut 1L
-        } else {
-            val left = next + Direction.LEFT.point
-            val right = next + Direction.RIGHT.point
-            return@getOrPut countTimelines(left, debug, lines) + countTimelines(right, debug, lines)
+            if (next !in lines) {
+                return@getOrPut 1L
+            } else {
+                val left = next + Direction.LEFT.point
+                val right = next + Direction.RIGHT.point
+                return@getOrPut countTimelines(left) + countTimelines(right)
+            }
         }
     }
+
+    return countTimelines(start)
 }
 
-private fun countSplitters(
-    start: Point,
-    debug: Debug,
-    lines: List<String>
-): Long {
-    return cache.getOrPut(start) {
-        if (start in cache) {
-            return 0
-        }
 
-        var next = start
-        do {
-            next += down
-        } while (next in lines && lines[next] == '.')
-
-        if (next !in lines) {
-            return@getOrPut 1L
-        } else {
-            val left = next + Direction.LEFT.point
-            val right = next + Direction.RIGHT.point
-            return@getOrPut countSplitters(left, debug, lines) + countSplitters(right, debug, lines)
-        }
-    }
-}

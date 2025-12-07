@@ -3,7 +3,7 @@ package helper.point.base
 import helper.pow
 import kotlin.math.sqrt
 
-data class Point(val x: Int, val y: Int) : Comparable<Point> {
+data class Point(val x: Int, val y: Int) {
 
     fun abs() = kotlin.math.abs(x) + kotlin.math.abs(y)
 
@@ -49,26 +49,17 @@ data class Point(val x: Int, val y: Int) : Comparable<Point> {
         return Point(x, y)
     }
 
-    companion object {
-        val ZERO = Point(0, 0)
-    }
-
-    override fun compareTo(other: Point): Int {
-        val xComp = this.x.compareTo(other.x)
-        val yComp = this.y.compareTo(other.y)
-
-        return if (xComp != 0) {
-            xComp
-        } else {
-            yComp
-        }
-    }
-
     fun euclideanDistance(other: Point): Double = sqrt(
         ((x - other.x).pow(2) + (y - other.y).pow(2)).toDouble()
     )
 
     fun slopeTo(b: Point) = if (x == b.x) null else (y - b.y).toDouble() / (x - b.x).toDouble()
+
+    companion object {
+        val ZERO = Point(0, 0)
+        val comparatorXFirst: Comparator<Point> = Comparator.comparing<Point, Int> { it.x }.thenComparing { it.y }
+        val comparatorYFirst: Comparator<Point> = Comparator.comparing<Point, Int> { it.y }.thenComparing { it.x }
+    }
 }
 
 

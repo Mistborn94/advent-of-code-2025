@@ -1,6 +1,8 @@
 package template
 
 import helper.Debug
+import helper.printExecutionTime
+import helper.printTotalTime
 import helper.readDayFile
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -39,20 +41,20 @@ internal class DayTKtTest {
     fun solve() {
         val lines = readDayFile(day, "input").readText().trimEnd()
 
-
+        println("Day $day")
         val durationA = measureTime {
             val solveA = solveA(lines)
             println("A: $solveA")
 //        assertEquals(0, solveA)
         }
-        println("  Execution time: $durationA")
+        printExecutionTime(durationA)
 
         val durationB = measureTime {
             val solveB = solveB(lines)
             println("B: $solveB")
 //        assertEquals(0, solveB)
         }
-        println("  Execution time: $durationB")
-        println("  Total time: ${durationA + durationB}")
+        printExecutionTime(durationB)
+        printTotalTime(durationA + durationB)
     }
 }

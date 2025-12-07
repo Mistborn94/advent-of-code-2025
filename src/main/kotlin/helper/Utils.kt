@@ -6,6 +6,9 @@ import java.util.stream.Stream
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.measureTime
 
 fun Int.toBinaryDigits(bitLength: Int): List<Int> = (bitLength - 1 downTo 0).map { bit ->
     val power = 2.pow(bit)
@@ -164,4 +167,12 @@ fun <E> MutableSet<E>.removeFirst(): E {
     val first = first()
     remove(first)
     return first
+}
+
+fun printExecutionTime(duration: Duration) {
+    println("  Execution time: ${duration.toString(DurationUnit.SECONDS, 3)}")
+}
+
+fun printTotalTime(duration: Duration) {
+    println("Total time: ${duration.toString(DurationUnit.SECONDS, 3)}")
 }
