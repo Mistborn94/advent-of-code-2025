@@ -15,6 +15,7 @@ fun Int.toBinaryDigits(bitLength: Int): List<Int> = (bitLength - 1 downTo 0).map
 }
 
 fun Int.pow(n: Int) = this.toDouble().pow(n).toInt()
+fun Long.pow(n: Int) = this.toDouble().pow(n).toLong()
 
 tailrec fun <T> recursiveRepeat(n: Int, initial: T, func: (T) -> T): T {
     return if (n == 0) {
