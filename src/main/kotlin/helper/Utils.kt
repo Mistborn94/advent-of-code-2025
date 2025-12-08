@@ -8,7 +8,6 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
-import kotlin.time.measureTime
 
 fun Int.toBinaryDigits(bitLength: Int): List<Int> = (bitLength - 1 downTo 0).map { bit ->
     val power = 2.pow(bit)
@@ -36,10 +35,36 @@ fun Iterable<Int>.digitsToInt(radix: Int) = reduce { acc, digit -> acc * radix +
 fun Iterable<Int>.digitsToLong(radix: Int): Long = fold(0L) { acc, digit -> acc * radix + digit }
 fun <E> MutableList<E>.removeFirstN(count: Int): List<E> = (0 until count).map { removeFirst() }
 
+fun <E> MutableIterable<E>.findAndRemoveAll(predicate: (E) -> Boolean): List<E> {
+    val iterator = iterator()
+    return buildList {
+        for (value in iterator) {
+            if (predicate(value)) {
+                add(value)
+                iterator.remove()
+            }
+        }
+    }
+}
+
+fun <E> MutableIterable<E>.findAndRemoveFirst(predicate: (E) -> Boolean): E? {
+    val iterator = iterator()
+    for (value in iterator) {
+        if (predicate(value)) {
+            iterator.remove()
+            return value
+        }
+    }
+    return null
+}
+
 /**
  * Like cartesian product but each combination is returned only once regardless of order
  */
 fun <A, B> Iterable<A>.pairwise(other: Iterable<B>): List<Pair<A, B>> =
+    flatMapIndexed { i, a -> other.drop(i + 1).map { b -> a to b } }
+
+fun <A, B> Sequence<A>.pairwise(other: Sequence<B>): Sequence<Pair<A, B>> =
     flatMapIndexed { i, a -> other.drop(i + 1).map { b -> a to b } }
 
 fun <A, B, R> Iterable<A>.pairwise(other: Iterable<B>, transform: (A, B) -> R): List<R> =

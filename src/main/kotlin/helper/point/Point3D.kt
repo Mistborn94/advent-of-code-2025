@@ -1,6 +1,8 @@
 package helper.point
 
 import kotlin.math.absoluteValue
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 data class Point3D(val x: Int, val y: Int, val z: Int) {
 
@@ -22,6 +24,19 @@ data class Point3D(val x: Int, val y: Int, val z: Int) {
     )
 
     fun abs(): Int = x.absoluteValue + y.absoluteValue + z.absoluteValue
+
+    fun euclideanDistance(other: Point3D): Double {
+        return sqrt(squaredDistance(other))
+    }
+
+    fun squaredDistance(other: Point3D): Double = (x - other.x).toDouble().pow(2) +
+            (y - other.y).toDouble().pow(2) +
+            (z - other.z).toDouble().pow(2)
+
+    override fun toString(): String {
+        return "($x,$y,$z)"
+    }
+
 
     companion object {
         private val x1 = Point3D(1, 0, 0)
