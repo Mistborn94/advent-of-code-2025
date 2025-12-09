@@ -3,7 +3,7 @@ package day9
 import helper.Debug
 import helper.combinations
 import helper.pairwise
-import helper.point.base.*
+import helper.point.base.Point
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -62,16 +62,16 @@ fun validRectangle(
 
     debug {
         println("Testing rectangle between $a and $b with area ${calcArea(a, b)}")
-        println("  Corners not in polygon: ${listOf(c, d).filterNot { it.isInsidePolygon(hBorders) } }")
+        println("  Corners not in polygon: ${listOf(c, d).filterNot { it.isInsidePolygon(hBorders, vBorders) }}")
     }
 
-    return c.isInsidePolygon(hBorders)
-            && d.isInsidePolygon(hBorders)
+    return c.isInsidePolygon(hBorders, vBorders)
+            && d.isInsidePolygon(hBorders, vBorders)
             && hSides.none { rectangleSide -> vBorders.any { polygonSide -> rectangleSide.intersectsWith(polygonSide) } }
             && vSides.none { rectangleSide -> hBorders.any { polygonSide -> rectangleSide.intersectsWith(polygonSide) } }
 }
 
-data class VerticalRange(val x: Int, private val y: IntRange)  {
+data class VerticalRange(val x: Int, private val y: IntRange) {
     val internalY = (y.first + 1)..y.last
 
     fun intersectsWith(other: HorizontalRange) = x in other.internalX && other.y in this.internalY
@@ -79,12 +79,12 @@ data class VerticalRange(val x: Int, private val y: IntRange)  {
     override fun toString() = "($x, $y)"
 
     companion object {
-        fun create(a: Point, b: Point) = VerticalRange(a.x, min(a.y, b.y)..< max(a.y, b.y))
+        fun create(a: Point, b: Point) = VerticalRange(a.x, min(a.y, b.y)..<max(a.y, b.y))
     }
 }
 
-data class HorizontalRange(val x: IntRange, val y: Int)  {
-    val internalX = (x.first + 1) .. x.last
+data class HorizontalRange(val x: IntRange, val y: Int) {
+    val internalX = (x.first + 1)..x.last
 
     fun intersectsWith(other: VerticalRange) = y in other.internalY && other.x in this.internalX
     fun isBelow(point: Point): Boolean = x.contains(point.x) && y > point.y
@@ -92,10 +92,12 @@ data class HorizontalRange(val x: IntRange, val y: Int)  {
     override fun toString() = "($x, $y)"
 
     companion object {
-        fun create(a: Point, b: Point) = HorizontalRange(min(a.x, b.x)..< max(a.x, b.x), a.y)
+        fun create(a: Point, b: Point) = HorizontalRange(min(a.x, b.x)..<max(a.x, b.x), a.y)
     }
 }
 
-fun Point.isInsidePolygon(horizontalEdges: List<HorizontalRange>): Boolean {
-    return horizontalEdges.any { this in it } || horizontalEdges.count { it.isBelow(this) } % 2 == 1
+fun Point.isInsidePolygon(horizontalEdges: List<HorizontalRange>, verticalEdges: List<VerticalRange>): Boolean {
+    return verticalEdges.any { this in it }
+            || horizontalEdges.any { this in it }
+            || horizontalEdges.count { it.isBelow(this) } % 2 == 1
 }

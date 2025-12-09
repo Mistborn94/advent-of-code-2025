@@ -54,6 +54,10 @@ data class Point(val x: Int, val y: Int) {
     )
 
     fun slopeTo(b: Point) = if (x == b.x) null else (y - b.y).toDouble() / (x - b.x).toDouble()
+    override fun toString(): String {
+        return "($x, $y)"
+    }
+
 
     companion object {
         val ZERO = Point(0, 0)
