@@ -58,6 +58,13 @@ fun <E> MutableIterable<E>.findAndRemoveFirst(predicate: (E) -> Boolean): E? {
     return null
 }
 
+fun <A> Iterable<A>.combinations(): List<Pair<A, A>> = this.pairwise(this)
+fun <A> Sequence<A>.combinations(): Sequence<Pair<A, A>> = this.pairwise(this)
+fun <A, R> Sequence<A>.combinations(transform: (A, A) -> R): Sequence<R> = this.pairwise(this, transform)
+
+fun <A> Iterable<A>.permutations(): List<Pair<A, A>> = this.cartesianProduct(this)
+fun <A> Sequence<A>.permutations(): Sequence<Pair<A, A>> = this.cartesianProduct(this)
+
 /**
  * Like cartesian product but each combination is returned only once regardless of order
  */
@@ -68,6 +75,9 @@ fun <A, B> Sequence<A>.pairwise(other: Sequence<B>): Sequence<Pair<A, B>> =
     flatMapIndexed { i, a -> other.drop(i + 1).map { b -> a to b } }
 
 fun <A, B, R> Iterable<A>.pairwise(other: Iterable<B>, transform: (A, B) -> R): List<R> =
+    flatMapIndexed { i, a -> other.drop(i + 1).map { b -> transform(a, b) } }
+
+fun <A, B, R> Sequence<A>.pairwise(other: Sequence<B>, transform: (A, B) -> R): Sequence<R> =
     flatMapIndexed { i, a -> other.drop(i + 1).map { b -> transform(a, b) } }
 
 fun <A, B> Iterable<A>.cartesianProduct(other: Iterable<B>): List<Pair<A, B>> =
