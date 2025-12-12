@@ -205,9 +205,9 @@ fun <E> MutableSet<E>.removeFirst(): E {
 }
 
 fun printExecutionTime(duration: Duration) {
-    println("  Execution time: ${duration.toString(DurationUnit.SECONDS, 3)}")
+    println("  Execution time: ${duration.toString(DurationUnit.MILLISECONDS, 3)}")
 }
 
 fun printTotalTime(duration: Duration) {
-    println("Total time: ${duration.toString(DurationUnit.SECONDS, 3)}")
+    println("Total time: ${duration.toString(DurationUnit.MILLISECONDS, 3)}")
 }
